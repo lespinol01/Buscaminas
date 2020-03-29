@@ -40,7 +40,17 @@ class TableroTest {
 		// Si hay 0 minas debe comenzar un proceso recursivo y
 		// debéis probar que desvela las casillas contiguas que tb
 		// son cero
-		System.out.println();
+		for (int i = 0; i < lado; i++) {
+			for (int j = 0; j < lado; j++) {
+				Coordenada posicion = new Coordenada(i, j);
+				Casilla casillaActual = tablero.getCasilla(posicion);
+				if (!casillaActual.isMina() && casillaActual.isVelada()) {
+					tablero.desvelarCasilla(posicion, lado);
+				}
+				
+			
+			}
+		}
 	}
 
 	@Test

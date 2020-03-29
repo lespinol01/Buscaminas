@@ -77,10 +77,10 @@ public class Tablero {
 	}
 
 	private void crearTablero(int lado) {
-		this.casillas=new Casilla[lado][lado];
+		this.casillas = new Casilla[lado][lado];
 		for (int i = 0; i < casillas.length; i++) {
 			for (int j = 0; j < casillas.length; j++) {
-				casillas[i][j]=new Casilla();
+				casillas[i][j] = new Casilla();
 			}
 		}
 	}
@@ -98,9 +98,28 @@ public class Tablero {
 		return getCasilla(posicion).isMina();
 	}
 
-	public boolean desvelarCasilla(Coordenada coordenada) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean desvelarCasilla(Coordenada coordenada, int lado) {
+		boolean retorno = false;
+		int posX = coordenada.getPosX();
+		int posY = coordenada.getPosY();
+
+		if (getCasilla(coordenada).isVelada() && !getCasilla(coordenada).isMarcada()) {
+			getCasilla(coordenada).setVelada(false);
+
+			for (int i = posX - 1; i <= posY + 1; i++) {
+				for (int j = posY - 1; j <= posY + 1; j++) {
+					Coordenada coordenadas = new Coordenada(i, j);
+					if (getCasilla(coordenada).getMinasAlrededor() == 0 && isDentroLimites(coordenadas, lado)
+							&& !getCasilla(coordenada).isMina() && !coordenada.equals(coordenadas)) {
+						desvelarCasilla(coordenadas, lado);
+						retorno = true;
+					}
+				}
+			}
+
+		}
+
+		return retorno;
 	}
 
 	public boolean marcarCasilla(Coordenada posicion) {
