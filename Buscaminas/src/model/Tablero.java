@@ -12,6 +12,10 @@ public class Tablero {
 		colocarMinas(lado, numeroBombas);
 	}
 
+	public Casilla[][] getCasillas() {
+		return casillas;
+	}
+
 	private void establecerMinasAlrededor(Coordenada posicionMinaCoordenada) {
 		int posX = posicionMinaCoordenada.getPosX();
 		int posY = posicionMinaCoordenada.getPosY();
@@ -20,16 +24,17 @@ public class Tablero {
 		for (int i = posX - 1; i <= posX + 1; i++) {
 			for (int j = posY - 1; j <= posY + 1; j++) {
 				Coordenada casillasAlrededor = new Coordenada(i, j);
-				if (!casillasAlrededor.equals(posicionMinaCoordenada) && isDentroLimites(casillasAlrededor,lado)) {
+				if (!casillasAlrededor.equals(posicionMinaCoordenada) && isDentroLimites(casillasAlrededor, lado)) {
 					Casilla casillaAlrededorSeleccionada = getCasilla(casillasAlrededor);
 					if (!casillaAlrededorSeleccionada.isMina()) {
-						casillaAlrededorSeleccionada.setMinasAlrededor(casillaAlrededorSeleccionada.getMinasAlrededor() + 1);
+						casillaAlrededorSeleccionada
+								.setMinasAlrededor(casillaAlrededorSeleccionada.getMinasAlrededor() + 1);
 					}
 				}
 			}
 		}
 	}
-	
+
 	private boolean isDentroLimites(Coordenada alrededor, int lado) {
 		return alrededor.getPosX() >= 0 && alrededor.getPosX() < lado && alrededor.getPosY() >= 0
 				&& alrededor.getPosY() < lado;
@@ -72,8 +77,12 @@ public class Tablero {
 	}
 
 	private void crearTablero(int lado) {
-		this.casillas = new Casilla[lado][lado];
-		// ahora hay que crear los objetos casilla
+		this.casillas=new Casilla[lado][lado];
+		for (int i = 0; i < casillas.length; i++) {
+			for (int j = 0; j < casillas.length; j++) {
+				casillas[i][j]=new Casilla();
+			}
+		}
 	}
 
 	// TODO antes todo esto era private
@@ -94,16 +103,9 @@ public class Tablero {
 		return false;
 	}
 
-	public boolean desmarcarCasilla(Coordenada posicion) {
-		if (getCasilla(posicion).isVelada() && getCasilla(posicion).isMarcada()) {
-			return getCasilla(posicion).isMarcada();
-		}
-		return false;
-	}
-
 	public boolean marcarCasilla(Coordenada posicion) {
 		if (getCasilla(posicion).isVelada() && !getCasilla(posicion).isMarcada()) {
-			return !getCasilla(posicion).isMarcada();
+			getCasilla(posicion).setMarcada(!getCasilla(posicion).isMarcada());
 		}
 		return false;
 	}
