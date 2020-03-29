@@ -45,7 +45,7 @@ class TableroTest {
 				Coordenada posicion = new Coordenada(i, j);
 				Casilla casillaActual = tablero.getCasilla(posicion);
 				if (!casillaActual.isMina() && casillaActual.isVelada()) {
-					tablero.desvelarCasilla(posicion, lado);
+					tablero.desvelarCasilla(posicion);
 				}
 				
 			

@@ -24,7 +24,7 @@ public class Tablero {
 		for (int i = posX - 1; i <= posX + 1; i++) {
 			for (int j = posY - 1; j <= posY + 1; j++) {
 				Coordenada casillasAlrededor = new Coordenada(i, j);
-				if (!casillasAlrededor.equals(posicionMinaCoordenada) && isDentroLimites(casillasAlrededor, lado)) {
+				if (!casillasAlrededor.equals(posicionMinaCoordenada) && isDentroLimites(casillasAlrededor)) {
 					Casilla casillaAlrededorSeleccionada = getCasilla(casillasAlrededor);
 					if (!casillaAlrededorSeleccionada.isMina()) {
 						casillaAlrededorSeleccionada
@@ -35,9 +35,9 @@ public class Tablero {
 		}
 	}
 
-	private boolean isDentroLimites(Coordenada alrededor, int lado) {
-		return alrededor.getPosX() >= 0 && alrededor.getPosX() < lado && alrededor.getPosY() >= 0
-				&& alrededor.getPosY() < lado;
+	private boolean isDentroLimites(Coordenada alrededor) {
+		return alrededor.getPosX() >= 0 && alrededor.getPosX() < casillas.length && alrededor.getPosY() >= 0
+				&& alrededor.getPosY() < casillas.length;
 	}
 
 	private void colocarMinas(int lado, int numeroBombas) {
@@ -98,7 +98,7 @@ public class Tablero {
 		return getCasilla(posicion).isMina();
 	}
 
-	public boolean desvelarCasilla(Coordenada coordenada, int lado) {
+	public boolean desvelarCasilla(Coordenada coordenada) {
 		boolean retorno = false;
 		int posX = coordenada.getPosX();
 		int posY = coordenada.getPosY();
@@ -109,9 +109,9 @@ public class Tablero {
 			for (int i = posX - 1; i <= posY + 1; i++) {
 				for (int j = posY - 1; j <= posY + 1; j++) {
 					Coordenada coordenadas = new Coordenada(i, j);
-					if (getCasilla(coordenada).getMinasAlrededor() == 0 && isDentroLimites(coordenadas, lado)
+					if (getCasilla(coordenada).getMinasAlrededor() == 0 && isDentroLimites(coordenadas)
 							&& !getCasilla(coordenada).isMina() && !coordenada.equals(coordenadas)) {
-						desvelarCasilla(coordenadas, lado);
+						desvelarCasilla(coordenadas);
 						retorno = true;
 					}
 				}
