@@ -2,18 +2,40 @@ package vista;
 
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-import Control.MiMouseListener;
+import Control.DesveladorController;
+import Control.MarcadorController;
 import model.Coordenada;
 
 public class Botonera extends JPanel {
-	MiMouseListener miListener;
+	DesveladorController desveladorController;
+	MarcadorController marcadorController;
+	
+	MouseAdapter miMouseAdapter  = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			JButton boton = ((JButton) e.getSource());
+			
+			if(SwingUtilities.isLeftMouseButton(e)) {
+				desveladorController.desvelarCasilla(boton.getName());
+			}
+			if (SwingUtilities.isRightMouseButton(e)) {
+				marcadorController.marcarCasilla(boton.getName());
+			}
+			actualizaBotonera(desveladorController.getEntornoGrafico());
+		}
+	};
 
-	public Botonera(int lado, MiMouseListener miListener) {
-		this.miListener = miListener;
+	public Botonera(int lado, DesveladorController desveladorController,MarcadorController marcadorController) {
+		this.desveladorController = desveladorController;
+		this.marcadorController = marcadorController;
 		// TODO el nombre para cuando hay mas de 10 de lado.
 		// debe ser de dos digitos por coordenada aunque el valor<10
 		// es decir la coordenada 6:11 debe ser 06:11, por ejemplo.
@@ -21,12 +43,32 @@ public class Botonera extends JPanel {
 		for (int filas = 0; filas < lado; filas++) {
 			for (int columnas = 0; columnas < lado; columnas++) {
 				JButton boton = new JButton();
-				String nombre = Integer.toString(filas) + Integer.toString(columnas);
-				boton.setName(nombre);
+				asignarNombre(boton,filas,columnas);
 				add(boton);
-				boton.addMouseListener(miListener);
+				boton.addMouseListener(miMouseAdapter);
 			}
 		}
+	}
+	
+	public void asignarNombre(JButton boton, int filas, int columnas ) {
+		int limite = 10;
+		String name = "";
+		if (filas >= limite && columnas < limite) {
+			//boton.setName(Integer.toString(filas) + "0" + Integer.toString(columnas));
+			name = Integer.toString(filas) + "0" + Integer.toString(columnas);
+		}
+		
+		if (filas < limite && columnas >= limite) {
+			//boton.setName("0" + Integer.toString(filas) + Integer.toString(columnas));
+			name = "0" + Integer.toString(filas) + Integer.toString(columnas);
+		}
+		
+		if (filas < limite && columnas < limite || filas >= limite && columnas >= limite) {
+			//boton.setName(Integer.toString(filas) + Integer.toString(columnas));
+			name = Integer.toString(filas) + Integer.toString(columnas);
+		}
+		
+		boton.setName(name);
 	}
 
 	public void actualizaBotonera(ElementoGrafico[][] elementos) {
@@ -35,8 +77,10 @@ public class Botonera extends JPanel {
 			JButton boton = (JButton)components[i];
 			Coordenada coordenada=obtenCoordenada(boton.getName());
 			ElementoGrafico elementoGrafico = elementos[coordenada.getPosX()][coordenada.getPosY()];
-			if(!elementoGrafico.isOcultado()) {
+			if(!elementoGrafico.isOcultado() && !elementoGrafico.isMina()) {
 				boton.setText(String.valueOf(elementoGrafico.getValor()));
+			}else if (!elementoGrafico.isOcultado() && elementoGrafico.isMina()) {
+				boton.setText("M");
 			}else if(elementoGrafico.isSenalada()){
 				boton.setText("X");
 			}else {
@@ -46,8 +90,13 @@ public class Botonera extends JPanel {
 	}
 	public static Coordenada obtenCoordenada(String name) {
 		int pos = name.length() / 2;
-		return new Coordenada(Integer.valueOf(name.substring(0, pos)),
+		Coordenada coordenada;
+		if (name.length()%2 == 0) {
+		return coordenada = new Coordenada(Integer.valueOf(name.substring(0, pos)),
 				Integer.valueOf(name.substring(pos, name.length())));
+		}else {
+			return coordenada = null;
+		}
 	}
 
 }

@@ -98,35 +98,57 @@ public class Tablero {
 		return getCasilla(posicion).isMina();
 	}
 
-	public boolean desvelarCasilla(Coordenada coordenada) {
-		boolean retorno = false;
+	public void desvelarCasilla(Coordenada coordenada) {
 		int posX = coordenada.getPosX();
 		int posY = coordenada.getPosY();
+		Casilla casillaPrincipal = getCasilla(coordenada);
+		
+		if (casillaPrincipal.isVelada() && !casillaPrincipal.isMarcada()) {
+			casillaPrincipal.setVelada(false);
 
-		if (getCasilla(coordenada).isVelada() && !getCasilla(coordenada).isMarcada()) {
-			getCasilla(coordenada).setVelada(false);
-
-			for (int i = posX - 1; i <= posY + 1; i++) {
+			for (int i = posX - 1; i <= posX + 1; i++) {
 				for (int j = posY - 1; j <= posY + 1; j++) {
-					Coordenada coordenadas = new Coordenada(i, j);
-					if (getCasilla(coordenada).getMinasAlrededor() == 0 && isDentroLimites(coordenadas)
-							&& !getCasilla(coordenada).isMina() && !coordenada.equals(coordenadas)) {
-						desvelarCasilla(coordenadas);
-						retorno = true;
+					Coordenada coordenadasAlrededor = new Coordenada(i, j);
+					if (casillaPrincipal.getMinasAlrededor() == 0 && isDentroLimites(coordenadasAlrededor)
+							&& !casillaPrincipal.isMina() && !coordenada.equals(coordenadasAlrededor)) {
+						desvelarCasilla(coordenadasAlrededor);
 					}
 				}
 			}
 
 		}
-
-		return retorno;
+		
+		if (!casillaPrincipal.isVelada() && !casillaPrincipal.isMarcada()) {
+		int contadorMarcadas = 0;
+			for (int i = posX - 1; i <= posX + 1; i++) {
+				for (int j = posY - 1; j <= posY + 1; j++) {
+					Coordenada coordenadaAlrededor = new Coordenada(i, j);
+					if (isDentroLimites(coordenadaAlrededor) && !coordenada.equals(coordenadaAlrededor) &&
+							getCasilla(coordenadaAlrededor).isMarcada()) {
+						contadorMarcadas++;
+					}
+				}
+			}
+			
+			if (casillaPrincipal.getMinasAlrededor() == contadorMarcadas) {
+				for (int i = posX - 1; i <= posX + 1; i++) {
+					for (int j = posY - 1; j <= posY + 1; j++) {
+						Coordenada coordenadaAlrededor = new Coordenada(i, j);
+						if (isDentroLimites(coordenadaAlrededor) && !coordenada.equals(coordenadaAlrededor)
+								&& getCasilla(coordenadaAlrededor).isVelada()) {
+							//getCasilla(coordenadaAlrededor).setVelada(false);
+							desvelarCasilla(coordenadaAlrededor);
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	public boolean marcarCasilla(Coordenada posicion) {
-		if (getCasilla(posicion).isVelada() && !getCasilla(posicion).isMarcada()) {
-			getCasilla(posicion).setMarcada(!getCasilla(posicion).isMarcada());
-		}
-		return false;
+		Casilla casilla = getCasilla(posicion);
+        return casilla.marcar();
 	}
 
 }
