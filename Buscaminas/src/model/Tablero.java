@@ -102,7 +102,7 @@ public class Tablero {
 		int posX = coordenada.getPosX();
 		int posY = coordenada.getPosY();
 		Casilla casillaPrincipal = getCasilla(coordenada);
-		
+
 		if (casillaPrincipal.isVelada() && !casillaPrincipal.isMarcada()) {
 			casillaPrincipal.setVelada(false);
 
@@ -117,38 +117,83 @@ public class Tablero {
 			}
 
 		}
-		
+
 		if (!casillaPrincipal.isVelada() && !casillaPrincipal.isMarcada()) {
-		int contadorMarcadas = 0;
+			int contadorMarcadas = 0;
 			for (int i = posX - 1; i <= posX + 1; i++) {
 				for (int j = posY - 1; j <= posY + 1; j++) {
 					Coordenada coordenadaAlrededor = new Coordenada(i, j);
-					if (isDentroLimites(coordenadaAlrededor) && !coordenada.equals(coordenadaAlrededor) &&
-							getCasilla(coordenadaAlrededor).isMarcada()) {
+					if (isDentroLimites(coordenadaAlrededor) && !coordenada.equals(coordenadaAlrededor)
+							&& getCasilla(coordenadaAlrededor).isMarcada()) {
 						contadorMarcadas++;
 					}
 				}
 			}
-			
+
 			if (casillaPrincipal.getMinasAlrededor() == contadorMarcadas) {
 				for (int i = posX - 1; i <= posX + 1; i++) {
 					for (int j = posY - 1; j <= posY + 1; j++) {
 						Coordenada coordenadaAlrededor = new Coordenada(i, j);
 						if (isDentroLimites(coordenadaAlrededor) && !coordenada.equals(coordenadaAlrededor)
 								&& getCasilla(coordenadaAlrededor).isVelada()) {
-							//getCasilla(coordenadaAlrededor).setVelada(false);
 							desvelarCasilla(coordenadaAlrededor);
 						}
 					}
 				}
 			}
 		}
-		
+
 	}
 
 	public boolean marcarCasilla(Coordenada posicion) {
 		Casilla casilla = getCasilla(posicion);
-        return casilla.marcar();
+		return casilla.marcar();
+	}
+
+	public boolean perderPartida() {
+		boolean perder = false;
+		for (int i = 0; i < getCasillas().length && !perder; i++) {
+			for (int j = 0; j < getCasillas().length && !perder; j++) {
+				Coordenada coordenada = new Coordenada(i, j);
+				if (isDentroLimites(coordenada) && getCasilla(coordenada).isMina()
+						&& !getCasilla(coordenada).isVelada()) {
+					perder = true;
+				}
+
+			}
+		}
+		
+		if (perder) {
+			for (int i = 0; i < casillas.length; i++) {
+				for (int j = 0; j < casillas.length; j++) {
+					getCasilla(new Coordenada(i, j)).setVelada(false);
+				}
+			}
+		}
+
+		return perder;
+	}
+	
+	public boolean ganarPartida() {
+		boolean ganar = true;
+		for (int i = 0; i < getCasillas().length; i++) {
+			for (int j = 0; j < getCasillas().length; j++) {
+				Coordenada coordenada = new Coordenada(i, j);
+				if (getCasilla(coordenada).isVelada() && !getCasilla(coordenada).isMina()) {
+					ganar = false;
+				}
+				if (getCasilla(coordenada).isVelada() && getCasilla(coordenada).isMina() 
+						&& !getCasilla(coordenada).isMarcada()) {
+					ganar = false;
+				}
+				
+				if (getCasilla(coordenada).isMina() && !getCasilla(coordenada).isVelada()) {
+					ganar = false;
+				}
+			}
+		}
+		
+		return ganar;
 	}
 
 }
